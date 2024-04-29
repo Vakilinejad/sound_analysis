@@ -65,22 +65,10 @@ def play_audio(filename):
 
     print("Playback finished.")
 
-def plot_waveform(filename):
-    # Open the audio file
-    wf = wave.open(filename, 'rb')
-
-    # Read the audio frames
-    signal = wf.readframes(-1)
-    print('length sig level 1: '+str(len(signal)))
-    signal = np.frombuffer(signal, dtype=np.int16)
-    print('length sig level 2: ' + str(len(signal)))
-
-    # Get the time axis for the waveform
-    time = np.linspace(0, len(signal) / wf.getframerate(), num=len(signal))
-
+def plot_waveform(signal,time, plot_color='b'):
     # Plot the waveform
     plt.figure(figsize=(10, 3))
-    plt.plot(time, signal, color='b')
+    plt.plot(time, signal, color=plot_color)
     plt.xlabel('Time (s)')
     plt.ylabel('Amplitude')
     plt.title('Recorded Audio Waveform')
@@ -99,13 +87,39 @@ def apply_lowpass_filter(filename, cutoff_freq):
     filtered_signal = lfilter(b, a, signal)
     return filtered_signal
 
+def extract_signal_time(filename):
+    wf = wave.open(filename, 'rb')
+    # Read the audio frames
+    signal = wf.readframes(-1)
+    signal = np.frombuffer(signal, dtype=np.int16)
+    sample_rate = wf.getframerate()
+    time = np.linspace(0, len(signal) / wf.getframerate(), num=len(signal))
+    return signal, time, sample_rate
+
+def plot_spectrum(signal, sample_rate):
+    # Compute the one-dimensional discrete Fourier Transform
+    spectrum = np.fft.fft(signal)
+    # Calculate the frequency bins
+    freqs = np.fft.fftfreq(len(signal), 1 / sample_rate)
+    # Plot the spectrum
+    plt.figure(figsize=(10, 4))
+    plt.plot(freqs[:len(freqs)//2], np.abs(spectrum)[:len(freqs)//2], color='b')
+    plt.xlabel('Frequency (Hz)')
+    plt.ylabel('Amplitude')
+    plt.title('Frequency Spectrum')
+    plt.grid(True)
+    plt.show()
+
 if __name__ == "__main__":
     filename = "recorded_audio.wav"
     record_audio(filename)
     play_audio(filename)
-    plot_waveform(filename)
+    signal, time, sample_rate = extract_signal_time(filename)
+    plot_waveform(signal, time)
 
     # Define filter parameters
-    cutoff_frequency = 4000  # Adjust this according to your needs
+    cutoff_frequency = 1000  # Adjust this according to your needs
     # Apply low-pass filter
     filtered_signal = apply_lowpass_filter(filename, cutoff_frequency)
+    plot_waveform(filtered_signal, time, plot_color='r')
+    plot_spectrum(filtered_signal, sample_rate)
