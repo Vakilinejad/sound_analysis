@@ -110,6 +110,7 @@ def plot_spectrum(signal, sample_rate):
     plt.grid(True)
     plt.show()
 
+
 if __name__ == "__main__":
     filename = "recorded_audio.wav"
     record_audio(filename)
