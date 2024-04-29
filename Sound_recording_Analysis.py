@@ -5,7 +5,7 @@ import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
 
-def record_audio(filename, duration=5, rate=10000, chunk=1024, channels=1, format=pyaudio.paInt16):
+def record_audio(filename, duration=5, rate=96000, chunk=1024, channels=1, format=pyaudio.paInt16):
     audio = pyaudio.PyAudio()
 
     # Open the microphone
