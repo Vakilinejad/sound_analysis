@@ -4,8 +4,8 @@ import numpy as np
 import matplotlib.pyplot as plt
 from scipy.signal import butter, lfilter
 
-recording_duration = 5
-def record_audio(filename, duration=recording_duration, rate=10000, chunk=1024, channels=1, format=pyaudio.paInt16):
+
+def record_audio(filename, duration=5, rate=10000, chunk=1024, channels=1, format=pyaudio.paInt16):
     audio = pyaudio.PyAudio()
 
     # Open the microphone
@@ -112,8 +112,9 @@ def plot_spectrum(signal, sample_rate):
 
 
 if __name__ == "__main__":
+    recording_duration = 3
     filename = "recorded_audio.wav"
-    record_audio(filename)
+    record_audio(filename, duration=recording_duration)
     play_audio(filename)
     signal, time, sample_rate = extract_signal_time(filename)
     plot_waveform(signal, time)
